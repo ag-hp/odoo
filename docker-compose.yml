@@ -14,7 +14,6 @@ services:
 
   web:
     image: odoo:17.0
-
     container_name: odoo
     depends_on:
       - db
@@ -34,9 +33,7 @@ services:
     restart: always #run
 
 volumes:
-  postgres_data:
-    driver: local
-    driver_opts:
-      type: 'none'
-    odoo-db-data:
-    odoo-data:
+  odoo-db-data:
+  odoo-data:
+  extra_addons:
+  addons:
