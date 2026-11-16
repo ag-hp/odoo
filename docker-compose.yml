@@ -1,6 +1,6 @@
 services:
   db:
-    image: postgres:latest
+    image: postgres:15
     container_name: db
     environment:
       - POSTGRES_DB=postgres
@@ -9,19 +9,34 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - odoo-db-data:/var/lib/postgresql/18/docker
+      - odoo-db-data:/var/lib/postgresql/data
     restart: always
 
   web:
     image: odoo:17.0
+
     container_name: odoo
     depends_on:
       - db
     ports:
       - "8069:8069"
-    restart: always
-    
-  volumes:
-    - odoo-web-data:/var/lib/odoo
-    - odoo-db-data
-    - odoo-data
+      - "8072:8072"
+    tty: true
+    command: --
+    environment:
+      - HOST=db
+      - USER=odoo
+      - PASSWORD=odoo
+    volumes:
+      - odoo-data:/var/lib/odoo
+      - extra_addons:/mnt/extra-addons/
+      - addons:/usr/lib/python3/dist-packages/odoo/addons
+    restart: always #run
+
+volumes:
+  postgres_data:
+    driver: local
+    driver_opts:
+      type: 'none'
+    odoo-db-data:
+    odoo-data:
