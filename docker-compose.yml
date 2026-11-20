@@ -1,39 +1,57 @@
 services:
   db:
-    image: postgres:15
-    container_name: db
-    environment:
-      - POSTGRES_DB=postgres
-      - POSTGRES_PASSWORD=odoo
-      - POSTGRES_USER=odoo
+    image: postgres:16
     ports:
-      - "5432:5432"
+      - 5432:5432
+    environment:
+      - POSTGRES_USER=odoo17
+      - POSTGRES_PASSWORD=odoo17
+      - POSTGRES_DB=postgres
+    restart: always             
     volumes:
-      - odoo-db-data:/var/lib/postgresql/data
-    restart: always
+        - postgres_data:/var/lib/postgresql/data
 
-  web:
-    image: odoo:17.0
-    container_name: odoo
+  odoo17:
+    image: odoo:17
     depends_on:
       - db
     ports:
-      - "8069:8069"
-      - "8072:8072"
+      - 8069:8069
+      - 8072:8072
     tty: true
     command: --
     environment:
       - HOST=db
-      - USER=odoo
-      - PASSWORD=odoo
+      - USER=odoo17
+      - PASSWORD=odoo17
     volumes:
-      - odoo-data:/var/lib/odoo
+      - odoo:/etc/odoo
       - extra_addons:/mnt/extra-addons/
       - addons:/usr/lib/python3/dist-packages/odoo/addons
-    restart: always #run
+    restart: always             # run 
 
 volumes:
-  odoo-db-data:
-  odoo-data:
-  extra_addons:
+  postgres_data:
+    driver: local
+    driver_opts:
+        type: 'none'
+        o: 'bind'
+        device: './postgres_data'
   addons:
+    driver: local
+    driver_opts:
+        type: 'none'
+        o: 'bind'
+        device: './addons'
+  extra_addons:
+    driver: local
+    driver_opts:
+        type: 'none'
+        o: 'bind'
+        device: './extra_addons'
+  odoo:
+    driver: local
+    driver_opts:
+        type: 'none'
+        o: 'bind'
+        device: './odoo'
