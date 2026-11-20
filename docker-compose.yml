@@ -20,6 +20,39 @@ services:
     ports:
       - "8069:8069"
       - "8072:8072"
+    environment:
+      - HOST=db
+      - USER=odoo
+      - PASSWORD=odoo
+    volumes:
+      - odoo-data:/var/lib/odoo
+      - ./extra_addons:/mnt/extra-addons
+    restart: always
+
+volumes:
+  odoo-db-data:
+  odoo-data:services:
+  db:
+    image: postgres:15
+    container_name: db
+    environment:
+      - POSTGRES_DB=postgres
+      - POSTGRES_PASSWORD=odoo
+      - POSTGRES_USER=odoo
+    ports:
+      - "5432:5432"
+    volumes:
+      - odoo-db-data:/var/lib/postgresql/data
+    restart: always
+
+  web:
+    image: odoo:17.0
+    container_name: odoo
+    depends_on:
+      - db
+    ports:
+      - "8069:8069"
+      - "8072:8072"
     tty: true
     command: --
     environment:
